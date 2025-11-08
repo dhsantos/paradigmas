@@ -117,13 +117,13 @@ cantidadVariablesLibres(T, N) :- term_variables(T, LV), length(LV, N).
 % Predicado dado
 deducirVariasPasadas(NN) :-
 	NN = nono(M,_),
-	cantidadVariablesLibres(M, VI), % VI = cantidad de celdas sin instanciar en M en este punto
+	cantidadVariablesLibres(M, VI), 
 	deducir1Pasada(NN),
-	cantidadVariablesLibres(M, VF), % VF = cantidad de celdas sin instanciar en M en este punto
+	cantidadVariablesLibres(M, VF), 
 	deducirVariasPasadasCont(NN, VI, VF).
 
 % Predicado dado
-deducirVariasPasadasCont(_, A, A). % Si VI = VF entonces no hubo más cambios y frenamos.
+deducirVariasPasadasCont(_, A, A). 
 deducirVariasPasadasCont(NN, A, B) :- A =\= B, deducirVariasPasadas(NN).
 
 % Ejercicio 8
