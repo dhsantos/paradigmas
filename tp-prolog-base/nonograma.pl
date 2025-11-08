@@ -108,7 +108,8 @@ combinarCelda(A, B, _) :- nonvar(A), nonvar(B), A \== B.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Ejercicio 7
-deducir1Pasada(_) :- completar("Ejercicio 7").
+deducir1Pasada(nono(_, Restricciones)) :-
+    maplist(pintarObligatorias, Restricciones).
 
 % Predicado dado
 cantidadVariablesLibres(T, N) :- term_variables(T, LV), length(LV, N).
@@ -126,13 +127,41 @@ deducirVariasPasadasCont(_, A, A). % Si VI = VF entonces no hubo más cambios y 
 deducirVariasPasadasCont(NN, A, B) :- A =\= B, deducirVariasPasadas(NN).
 
 % Ejercicio 8
-restriccionConMenosLibres(_, _) :- completar("Ejercicio 8").
+restriccionConMenosLibres(nono(_, Restricciones), R) :-
+    member(R, Restricciones),
+    cantidadVariablesLibres(R, N),
+    N > 0,
+    not((member(R2, Restricciones), 
+         cantidadVariablesLibres(R2, N2), 
+         N2 > 0, 
+         N2 < N)).
 
 % Ejercicio 9
-resolverDeduciendo(NN) :- completar("Ejercicio 9").
+resolverDeduciendo(NN) :-
+	NN = nono(M,_),
+	deducirVariasPasadas(NN),
+	cantidadVariablesLibres(M, FV),
+	resolverDeduciendoCont(NN, FV).
+
+%! resolverDeduciendoCont(+NN, +FV)
+resolverDeduciendoCont(_, 0).
+resolverDeduciendoCont(NN, FV) :-
+	NN = nono(M,_),
+	FV > 0,
+	restriccionConMenosLibres(NN, r(Restric, Linea)),
+	!,
+	findall(Linea, pintadasValidas(r(Restric, Linea)), PosiblesLineas),
+	member(LineaPosible, PosiblesLineas),
+	Linea = LineaPosible,
+	deducirVariasPasadas(NN),
+	cantidadVariablesLibres(M, FV1),
+	resolverDeduciendoCont(NN, FV1).
 
 % Ejercicio 10
-solucionUnica(NN) :- completar("Ejercicio 10").
+solucionUnica(NN) :-
+    findall(NN, resolverDeduciendo(NN), Soluciones),
+    sort(Soluciones, Unicas),
+    length(Unicas, 1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                              %
